@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '/flutter_flow/flutter_flow_util.dart';
 
+import '/backend/auth_service.dart';
 import '/index.dart';
 
 export 'package:go_router/go_router.dart';
@@ -15,16 +17,33 @@ const kTransitionInfoKey = '__transition_info__';
 GlobalKey<NavigatorState> appNavigatorKey = GlobalKey<NavigatorState>();
 
 class AppStateNotifier extends ChangeNotifier {
-  AppStateNotifier._();
+  AppStateNotifier._() {
+    try {
+      _authSub = Supabase.instance.client.auth.onAuthStateChange.listen((_) {
+        notifyListeners();
+      });
+    } catch (_) {
+      // Supabase may not be initialised yet at construction time.
+    }
+  }
 
   static AppStateNotifier? _instance;
   static AppStateNotifier get instance => _instance ??= AppStateNotifier._();
 
+  StreamSubscription<AuthState>? _authSub;
   bool showSplashImage = true;
 
   void stopShowingSplashImage() {
     showSplashImage = false;
     notifyListeners();
+  }
+
+  bool get isSignedIn => AuthService.instance.isSignedIn;
+
+  @override
+  void dispose() {
+    _authSub?.cancel();
+    super.dispose();
   }
 }
 
@@ -34,6 +53,20 @@ GoRouter createRouter(AppStateNotifier appStateNotifier) => GoRouter(
       refreshListenable: appStateNotifier,
       navigatorKey: appNavigatorKey,
       errorBuilder: (context, state) => SplashAndOnboardingWidget(),
+      redirect: (context, state) {
+        final signedIn = appStateNotifier.isSignedIn;
+        final loc = state.uri.path;
+        final isAuthRoute = loc == '/' ||
+            loc == SplashAndOnboardingWidget.routePath ||
+            loc == PhoneLoginProfileSetupWidget.routePath;
+        if (!signedIn && !isAuthRoute) {
+          return SplashAndOnboardingWidget.routePath;
+        }
+        if (signedIn && isAuthRoute) {
+          return HomeDashboardWidget.routePath;
+        }
+        return null;
+      },
       routes: [
         FFRoute(
           name: '_initialize',

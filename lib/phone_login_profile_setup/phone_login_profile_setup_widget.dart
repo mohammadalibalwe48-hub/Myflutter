@@ -1,3 +1,4 @@
+import '/backend/auth_service.dart';
 import '/components/button_widget.dart';
 import '/components/main_bottom_navigation_widget.dart';
 import '/components/selection_card_widget.dart';
@@ -7,6 +8,8 @@ import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import '/flutter_flow/local_assets.dart';
+import '/home_dashboard/home_dashboard_widget.dart';
+import '/splash_and_onboarding/splash_and_onboarding_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'phone_login_profile_setup_model.dart';
@@ -29,6 +32,9 @@ class _PhoneLoginProfileSetupWidgetState
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  int _selectedLevel = 0; // 0 = basic, 1 = secondary, 2 = university
+  bool _isSubmitting = false;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +46,43 @@ class _PhoneLoginProfileSetupWidgetState
     _model.dispose();
 
     super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (_isSubmitting) return;
+    final raw =
+        _model.textFieldModel.inputTextController?.text.trim() ?? '';
+    if (raw.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('أدخل رقم هاتف صحيح للمتابعة'),
+        ),
+      );
+      return;
+    }
+    setState(() => _isSubmitting = true);
+    try {
+      const levelLabels = [
+        'التعليم الأساسي',
+        'التعليم الثانوي',
+        'التعليم الجامعي',
+      ];
+      await AuthService.instance.signInOrSignUpWithPhone(
+        raw,
+        displayName: 'أحمد المحمد',
+        initials: 'أ',
+        grade: levelLabels[_selectedLevel],
+      );
+      if (!mounted) return;
+      context.go(HomeDashboardWidget.routePath);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('تعذر تسجيل الدخول: $e')),
+      );
+    } finally {
+      if (mounted) setState(() => _isSubmitting = false);
+    }
   }
 
   @override
@@ -86,9 +129,8 @@ class _PhoneLoginProfileSetupWidgetState
                                       FlutterFlowTheme.of(context).primaryText,
                                   size: 24.0,
                                 ),
-                                onPressed: () {
-                                  print('IconButton pressed ...');
-                                },
+                                onPressed: () => context.go(
+                                    SplashAndOnboardingWidget.routePath),
                               ),
                               wrapWithModel(
                                 model: _model.stepIndicator2Model,
@@ -376,52 +418,74 @@ class _PhoneLoginProfileSetupWidgetState
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
-                                  wrapWithModel(
-                                    model: _model.selectionCardModel1,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: SelectionCardWidget(
-                                      hasSubtitle: true,
-                                      icon: Icon(
-                                        Icons.school_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        size: 20.0,
+                                  InkWell(
+                                    onTap: () =>
+                                        setState(() => _selectedLevel = 0),
+                                    child: wrapWithModel(
+                                      model: _model.selectionCardModel1,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: SelectionCardWidget(
+                                        hasSubtitle: true,
+                                        icon: Icon(
+                                          Icons.school_rounded,
+                                          color: _selectedLevel == 0
+                                              ? FlutterFlowTheme.of(context)
+                                                  .primary
+                                              : FlutterFlowTheme.of(context)
+                                                  .secondaryText,
+                                          size: 20.0,
+                                        ),
+                                        subtitle: 'الصف الأول - التاسع',
+                                        title: 'التعليم الأساسي',
+                                        selected: _selectedLevel == 0,
                                       ),
-                                      subtitle: 'الصف الأول - التاسع',
-                                      title: 'التعليم الأساسي',
-                                      selected: true,
                                     ),
                                   ),
-                                  wrapWithModel(
-                                    model: _model.selectionCardModel2,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: SelectionCardWidget(
-                                      hasSubtitle: true,
-                                      icon: Icon(
-                                        Icons.menu_book_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                        size: 20.0,
+                                  InkWell(
+                                    onTap: () =>
+                                        setState(() => _selectedLevel = 1),
+                                    child: wrapWithModel(
+                                      model: _model.selectionCardModel2,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: SelectionCardWidget(
+                                        hasSubtitle: true,
+                                        icon: Icon(
+                                          Icons.menu_book_rounded,
+                                          color: _selectedLevel == 1
+                                              ? FlutterFlowTheme.of(context)
+                                                  .primary
+                                              : FlutterFlowTheme.of(context)
+                                                  .secondaryText,
+                                          size: 20.0,
+                                        ),
+                                        subtitle:
+                                            'العلمي، الأدبي، والمهني',
+                                        title: 'التعليم الثانوي',
+                                        selected: _selectedLevel == 1,
                                       ),
-                                      subtitle: 'العلمي، الأدبي، والمهني',
-                                      title: 'التعليم الثانوي',
-                                      selected: false,
                                     ),
                                   ),
-                                  wrapWithModel(
-                                    model: _model.selectionCardModel3,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: SelectionCardWidget(
-                                      hasSubtitle: true,
-                                      icon: Icon(
-                                        Icons.account_balance_rounded,
-                                        color: FlutterFlowTheme.of(context)
-                                            .secondaryText,
-                                        size: 20.0,
+                                  InkWell(
+                                    onTap: () =>
+                                        setState(() => _selectedLevel = 2),
+                                    child: wrapWithModel(
+                                      model: _model.selectionCardModel3,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: SelectionCardWidget(
+                                        hasSubtitle: true,
+                                        icon: Icon(
+                                          Icons.account_balance_rounded,
+                                          color: _selectedLevel == 2
+                                              ? FlutterFlowTheme.of(context)
+                                                  .primary
+                                              : FlutterFlowTheme.of(context)
+                                                  .secondaryText,
+                                          size: 20.0,
+                                        ),
+                                        subtitle: 'الكليات والمعاهد',
+                                        title: 'التعليم الجامعي',
+                                        selected: _selectedLevel == 2,
                                       ),
-                                      subtitle: 'الكليات والمعاهد',
-                                      title: 'التعليم الجامعي',
-                                      selected: false,
                                     ),
                                   ),
                                 ],
@@ -597,18 +661,21 @@ class _PhoneLoginProfileSetupWidgetState
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              wrapWithModel(
-                                model: _model.buttonModel,
-                                updateCallback: () => safeSetState(() {}),
-                                child: ButtonWidget(
-                                  content: 'متابعة',
-                                  iconPresent: false,
-                                  iconEndPresent: false,
-                                  variant: 'primary',
-                                  size: 'large',
-                                  fullWidth: true,
-                                  loading: false,
-                                  disabled: false,
+                              InkWell(
+                                onTap: _submit,
+                                child: wrapWithModel(
+                                  model: _model.buttonModel,
+                                  updateCallback: () => safeSetState(() {}),
+                                  child: ButtonWidget(
+                                    content: 'متابعة',
+                                    iconPresent: false,
+                                    iconEndPresent: false,
+                                    variant: 'primary',
+                                    size: 'large',
+                                    fullWidth: true,
+                                    loading: _isSubmitting,
+                                    disabled: _isSubmitting,
+                                  ),
                                 ),
                               ),
                               Row(

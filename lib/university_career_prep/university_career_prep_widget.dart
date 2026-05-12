@@ -1,3 +1,5 @@
+import '/backend/data_service.dart';
+import '/backend/models.dart';
 import '/components/button_widget.dart';
 import '/components/main_bottom_navigation_widget.dart';
 import '/components/prep_resource_widget.dart';
@@ -7,6 +9,7 @@ import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'university_career_prep_model.dart';
 export 'university_career_prep_model.dart';
 
@@ -27,10 +30,36 @@ class _UniversityCareerPrepWidgetState
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<UniversityModel> _universities = const [];
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => UniversityCareerPrepModel());
+    _load();
+  }
+
+  Future<void> _load() async {
+    final fresh = await DataService.instance.listUniversities();
+    if (!mounted) return;
+    if (fresh.isNotEmpty) setState(() => _universities = fresh);
+  }
+
+  Future<void> _open(String url) async {
+    if (url.isEmpty) return;
+    final uri = Uri.tryParse(url);
+    if (uri == null) return;
+    try {
+      await launchUrl(uri, mode: LaunchMode.externalApplication);
+    } catch (_) {}
+  }
+
+  String _websiteFor(int index, String fallbackName) {
+    if (index < _universities.length) {
+      final w = _universities[index].website;
+      if (w.isNotEmpty) return w;
+    }
+    return 'https://www.google.com/search?q=$fallbackName';
   }
 
   @override
@@ -464,44 +493,60 @@ class _UniversityCareerPrepWidgetState
                                         lineHeight: 1.4,
                                       ),
                                 ),
-                                wrapWithModel(
-                                  model: _model.universityCardModel1,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: UniversityCardWidget(
-                                    imgDesc:
-                                        'https://dimg.dreamflow.cloud/v1/image/Damascus%20University%20Logo',
-                                    location: 'دمشق، البرامكة',
-                                    name: 'جامعة دمشق',
+                                InkWell(
+                                  onTap: () => _open(
+                                      _websiteFor(0, 'جامعة دمشق')),
+                                  child: wrapWithModel(
+                                    model: _model.universityCardModel1,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: UniversityCardWidget(
+                                      imgDesc:
+                                          'https://dimg.dreamflow.cloud/v1/image/Damascus%20University%20Logo',
+                                      location: 'دمشق، البرامكة',
+                                      name: 'جامعة دمشق',
+                                    ),
                                   ),
                                 ),
-                                wrapWithModel(
-                                  model: _model.universityCardModel2,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: UniversityCardWidget(
-                                    imgDesc:
-                                        'https://dimg.dreamflow.cloud/v1/image/Aleppo%20University%20Logo',
-                                    location: 'حلب، الفرقان',
-                                    name: 'جامعة حلب',
+                                InkWell(
+                                  onTap: () => _open(
+                                      _websiteFor(1, 'جامعة حلب')),
+                                  child: wrapWithModel(
+                                    model: _model.universityCardModel2,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: UniversityCardWidget(
+                                      imgDesc:
+                                          'https://dimg.dreamflow.cloud/v1/image/Aleppo%20University%20Logo',
+                                      location: 'حلب، الفرقان',
+                                      name: 'جامعة حلب',
+                                    ),
                                   ),
                                 ),
-                                wrapWithModel(
-                                  model: _model.universityCardModel3,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: UniversityCardWidget(
-                                    imgDesc:
-                                        'https://dimg.dreamflow.cloud/v1/image/Tishreen%20University%20Logo',
-                                    location: 'اللاذقية',
-                                    name: 'جامعة تشرين',
+                                InkWell(
+                                  onTap: () => _open(
+                                      _websiteFor(2, 'جامعة تشرين')),
+                                  child: wrapWithModel(
+                                    model: _model.universityCardModel3,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: UniversityCardWidget(
+                                      imgDesc:
+                                          'https://dimg.dreamflow.cloud/v1/image/Tishreen%20University%20Logo',
+                                      location: 'اللاذقية',
+                                      name: 'جامعة تشرين',
+                                    ),
                                   ),
                                 ),
-                                wrapWithModel(
-                                  model: _model.universityCardModel4,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: UniversityCardWidget(
-                                    imgDesc:
-                                        'https://dimg.dreamflow.cloud/v1/image/SVU%20Logo',
-                                    location: 'عبر الإنترنت',
-                                    name: 'الجامعة الافتراضية',
+                                InkWell(
+                                  onTap: () => _open(_websiteFor(
+                                      3, 'الجامعة الافتراضية')),
+                                  child: wrapWithModel(
+                                    model: _model.universityCardModel4,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: UniversityCardWidget(
+                                      imgDesc:
+                                          'https://dimg.dreamflow.cloud/v1/image/SVU%20Logo',
+                                      location: 'عبر الإنترنت',
+                                      name: 'الجامعة الافتراضية',
+                                    ),
                                   ),
                                 ),
                               ].divide(SizedBox(height: 16.0)),

@@ -1,9 +1,16 @@
+import '/academic_library/academic_library_widget.dart';
+import '/backend/data_service.dart';
+import '/backend/models.dart';
+import '/community_feed/community_feed_widget.dart';
 import '/components/learning_card_widget.dart';
 import '/components/main_bottom_navigation_widget.dart';
 import '/components/quick_action_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/profile_storage_settings/profile_storage_settings_widget.dart';
+import '/university_career_prep/university_career_prep_widget.dart';
+import '/weekly_planner/weekly_planner_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'home_dashboard_model.dart';
@@ -24,10 +31,18 @@ class _HomeDashboardWidgetState extends State<HomeDashboardWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  ProfileModel? _profile;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => HomeDashboardModel());
+    _load();
+  }
+
+  Future<void> _load() async {
+    final p = await DataService.instance.getCurrentProfile();
+    if (mounted) setState(() => _profile = p);
   }
 
   @override
@@ -105,7 +120,9 @@ class _HomeDashboardWidgetState extends State<HomeDashboardWidget> {
                                               alignment: AlignmentDirectional(
                                                   0.0, 0.0),
                                               child: Text(
-                                                'أ',
+                                                (_profile?.initials.isNotEmpty ?? false)
+                                                    ? _profile!.initials
+                                                    : 'أ',
                                                 textAlign: TextAlign.center,
                                                 maxLines: 1,
                                                 style: FlutterFlowTheme.of(
@@ -147,7 +164,9 @@ class _HomeDashboardWidgetState extends State<HomeDashboardWidget> {
                                                   CrossAxisAlignment.start,
                                               children: [
                                                 Text(
-                                                  'صباح الخير، أحمد',
+                                                  (_profile?.displayName.isNotEmpty ?? false)
+                                                      ? 'صباح الخير، ${_profile!.displayName.split(' ').first}'
+                                                      : 'صباح الخير، أحمد',
                                                   style: FlutterFlowTheme.of(
                                                           context)
                                                       .titleMedium
@@ -555,55 +574,68 @@ class _HomeDashboardWidgetState extends State<HomeDashboardWidget> {
                                   children: [
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel1,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFE0F2FE),
-                                          icon: Icon(
-                                            Icons.calendar_today_rounded,
-                                            color: Color(0xFF0369A1),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            WeeklyPlannerWidget.routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel1,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFE0F2FE),
+                                            icon: Icon(
+                                              Icons.calendar_today_rounded,
+                                              color: Color(0xFF0369A1),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFF0369A1),
+                                            label: 'جدولي',
                                           ),
-                                          iconColor: Color(0xFF0369A1),
-                                          label: 'جدولي',
                                         ),
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel2,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFF0FDF4),
-                                          icon: Icon(
-                                            Icons.description_rounded,
-                                            color: Color(0xFF15803D),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            AcademicLibraryWidget.routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel2,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFF0FDF4),
+                                            icon: Icon(
+                                              Icons.description_rounded,
+                                              color: Color(0xFF15803D),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFF15803D),
+                                            label: 'نماذج امتحانية',
                                           ),
-                                          iconColor: Color(0xFF15803D),
-                                          label: 'نماذج امتحانية',
                                         ),
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel3,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFFEF2F2),
-                                          icon: Icon(
-                                            Icons.cloud_download_rounded,
-                                            color: Color(0xFFB91C1C),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            ProfileStorageSettingsWidget
+                                                .routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel3,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFFEF2F2),
+                                            icon: Icon(
+                                              Icons.cloud_download_rounded,
+                                              color: Color(0xFFB91C1C),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFFB91C1C),
+                                            label: 'المحملات',
                                           ),
-                                          iconColor: Color(0xFFB91C1C),
-                                          label: 'المحملات',
                                         ),
                                       ),
                                     ),
@@ -616,55 +648,68 @@ class _HomeDashboardWidgetState extends State<HomeDashboardWidget> {
                                   children: [
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel4,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFF5F3FF),
-                                          icon: Icon(
-                                            Icons.forum_rounded,
-                                            color: Color(0xFF6D28D9),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            CommunityFeedWidget.routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel4,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFF5F3FF),
+                                            icon: Icon(
+                                              Icons.forum_rounded,
+                                              color: Color(0xFF6D28D9),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFF6D28D9),
+                                            label: 'مجموعات',
                                           ),
-                                          iconColor: Color(0xFF6D28D9),
-                                          label: 'مجموعات',
                                         ),
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel5,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFFFF7ED),
-                                          icon: Icon(
-                                            Icons.help_center_rounded,
-                                            color: Color(0xFFC2410C),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            CommunityFeedWidget.routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel5,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFFFF7ED),
+                                            icon: Icon(
+                                              Icons.help_center_rounded,
+                                              color: Color(0xFFC2410C),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFFC2410C),
+                                            label: 'اسأل سؤالاً',
                                           ),
-                                          iconColor: Color(0xFFC2410C),
-                                          label: 'اسأل سؤالاً',
                                         ),
                                       ),
                                     ),
                                     Expanded(
                                       flex: 1,
-                                      child: wrapWithModel(
-                                        model: _model.quickActionModel6,
-                                        updateCallback: () =>
-                                            safeSetState(() {}),
-                                        child: QuickActionWidget(
-                                          bgColor: Color(0xFFECFEFF),
-                                          icon: Icon(
-                                            Icons.school_rounded,
-                                            color: Color(0xFF0E7490),
-                                            size: 24.0,
+                                      child: InkWell(
+                                        onTap: () => context.push(
+                                            UniversityCareerPrepWidget
+                                                .routePath),
+                                        child: wrapWithModel(
+                                          model: _model.quickActionModel6,
+                                          updateCallback: () =>
+                                              safeSetState(() {}),
+                                          child: QuickActionWidget(
+                                            bgColor: Color(0xFFECFEFF),
+                                            icon: Icon(
+                                              Icons.school_rounded,
+                                              color: Color(0xFF0E7490),
+                                              size: 24.0,
+                                            ),
+                                            iconColor: Color(0xFF0E7490),
+                                            label: 'تحضير جامعة',
                                           ),
-                                          iconColor: Color(0xFF0E7490),
-                                          label: 'تحضير جامعة',
                                         ),
                                       ),
                                     ),
