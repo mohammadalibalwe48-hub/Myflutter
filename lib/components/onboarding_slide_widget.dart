@@ -1,8 +1,8 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/flutter_flow/local_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:lottie/lottie.dart';
 import 'onboarding_slide_model.dart';
 export 'onboarding_slide_model.dart';
 
@@ -59,8 +59,8 @@ class _OnboardingSlideWidgetState extends State<OnboardingSlideWidget> {
           width: 300.0,
           height: 300.0,
           alignment: AlignmentDirectional(0.0, 0.0),
-          child: Lottie.network(
-            valueOrDefault<String>(
+          child: DreamflowLottie(
+            url: valueOrDefault<String>(
               widget.animationDesc,
               'https://dimg.dreamflow.cloud/v1/lottie/student+studying+offline+with+books+and+lightbulb',
             ),

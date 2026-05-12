@@ -6,7 +6,7 @@ import '/components/text_field_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '/flutter_flow/local_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'phone_login_profile_setup_model.dart';
@@ -235,11 +235,7 @@ class _PhoneLoginProfileSetupWidgetState
                                                 lineHeight: 1.6,
                                               ),
                                         ),
-                                        CachedNetworkImage(
-                                          fadeInDuration:
-                                              Duration(milliseconds: 0),
-                                          fadeOutDuration:
-                                              Duration(milliseconds: 0),
+                                        DreamflowImage(
                                           imageUrl:
                                               'https://dimg.dreamflow.cloud/v1/image/Syria%20flag%20icon',
                                           width: 20.0,

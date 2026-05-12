@@ -1,7 +1,7 @@
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '/flutter_flow/local_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'lesson_item_model.dart';
@@ -95,9 +95,7 @@ class _LessonItemWidgetState extends State<LessonItemWidget> {
                       child: Stack(
                         alignment: AlignmentDirectional(-1.0, -1.0),
                         children: [
-                          CachedNetworkImage(
-                            fadeInDuration: Duration(milliseconds: 0),
-                            fadeOutDuration: Duration(milliseconds: 0),
+                          DreamflowImage(
                             imageUrl: valueOrDefault<String>(
                               widget.imgDesc,
                               'https://dimg.dreamflow.cloud/v1/image/math%20blackboard',

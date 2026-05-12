@@ -6,7 +6,7 @@ import '/components/tab_group_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '/flutter_flow/local_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'content_viewer_model.dart';
@@ -328,11 +328,7 @@ class _ContentViewerWidgetState extends State<ContentViewerWidget> {
                                             children: [
                                               Opacity(
                                                 opacity: 0.6,
-                                                child: CachedNetworkImage(
-                                                  fadeInDuration:
-                                                      Duration(milliseconds: 0),
-                                                  fadeOutDuration:
-                                                      Duration(milliseconds: 0),
+                                                child: DreamflowImage(
                                                   imageUrl:
                                                       'https://dimg.dreamflow.cloud/v1/image/physics%20teacher%20drawing%20wave%20diagrams%20on%20blackboard',
                                                   fit: BoxFit.cover,

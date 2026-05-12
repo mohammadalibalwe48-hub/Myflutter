@@ -1,6 +1,6 @@
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import '/flutter_flow/local_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'university_card_model.dart';
@@ -79,9 +79,7 @@ class _UniversityCardWidgetState extends State<UniversityCardWidget> {
                       shape: BoxShape.rectangle,
                     ),
                     alignment: AlignmentDirectional(0.0, 0.0),
-                    child: CachedNetworkImage(
-                      fadeInDuration: Duration(milliseconds: 0),
-                      fadeOutDuration: Duration(milliseconds: 0),
+                    child: DreamflowImage(
                       imageUrl: valueOrDefault<String>(
                         widget.imgDesc,
                         'https://dimg.dreamflow.cloud/v1/image/Damascus%20University%20Logo',
