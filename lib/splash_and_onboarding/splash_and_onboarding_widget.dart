@@ -4,6 +4,7 @@ import '/components/onboarding_slide_widget.dart';
 import '/components/step_indicator_widget.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/phone_login_profile_setup/phone_login_profile_setup_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'splash_and_onboarding_model.dart';
@@ -79,18 +80,22 @@ class _SplashAndOnboardingWidgetState extends State<SplashAndOnboardingWidget> {
                             disabled: false,
                           ),
                         ),
-                        wrapWithModel(
-                          model: _model.buttonModel2,
-                          updateCallback: () => safeSetState(() {}),
-                          child: ButtonWidget(
-                            content: 'تخطي',
-                            iconPresent: false,
-                            iconEndPresent: false,
-                            variant: 'ghost',
-                            size: 'small',
-                            fullWidth: false,
-                            loading: false,
-                            disabled: false,
+                        InkWell(
+                          onTap: () => context
+                              .go(PhoneLoginProfileSetupWidget.routePath),
+                          child: wrapWithModel(
+                            model: _model.buttonModel2,
+                            updateCallback: () => safeSetState(() {}),
+                            child: ButtonWidget(
+                              content: 'تخطي',
+                              iconPresent: false,
+                              iconEndPresent: false,
+                              variant: 'ghost',
+                              size: 'small',
+                              fullWidth: false,
+                              loading: false,
+                              disabled: false,
+                            ),
                           ),
                         ),
                       ],
@@ -135,23 +140,28 @@ class _SplashAndOnboardingWidgetState extends State<SplashAndOnboardingWidget> {
                         Container(
                           height: 20.0,
                         ),
-                        wrapWithModel(
-                          model: _model.buttonModel3,
-                          updateCallback: () => safeSetState(() {}),
-                          child: ButtonWidget(
-                            content: 'التالي',
-                            iconPresent: false,
-                            iconEnd: Icon(
-                              Icons.arrow_back_rounded,
-                              color: FlutterFlowTheme.of(context).onPrimary,
-                              size: 16.0,
+                        InkWell(
+                          onTap: () => context
+                              .go(PhoneLoginProfileSetupWidget.routePath),
+                          child: wrapWithModel(
+                            model: _model.buttonModel3,
+                            updateCallback: () => safeSetState(() {}),
+                            child: ButtonWidget(
+                              content: 'التالي',
+                              iconPresent: false,
+                              iconEnd: Icon(
+                                Icons.arrow_back_rounded,
+                                color:
+                                    FlutterFlowTheme.of(context).onPrimary,
+                                size: 16.0,
+                              ),
+                              iconEndPresent: true,
+                              variant: 'primary',
+                              size: 'large',
+                              fullWidth: true,
+                              loading: false,
+                              disabled: false,
                             ),
-                            iconEndPresent: true,
-                            variant: 'primary',
-                            size: 'large',
-                            fullWidth: true,
-                            loading: false,
-                            disabled: false,
                           ),
                         ),
                         Row(
@@ -184,18 +194,22 @@ class _SplashAndOnboardingWidgetState extends State<SplashAndOnboardingWidget> {
                                     lineHeight: 1.6,
                                   ),
                             ),
-                            wrapWithModel(
-                              model: _model.buttonModel4,
-                              updateCallback: () => safeSetState(() {}),
-                              child: ButtonWidget(
-                                content: 'تسجيل الدخول',
-                                iconPresent: false,
-                                iconEndPresent: false,
-                                variant: 'ghost',
-                                size: 'small',
-                                fullWidth: false,
-                                loading: false,
-                                disabled: false,
+                            InkWell(
+                              onTap: () => context
+                                  .go(PhoneLoginProfileSetupWidget.routePath),
+                              child: wrapWithModel(
+                                model: _model.buttonModel4,
+                                updateCallback: () => safeSetState(() {}),
+                                child: ButtonWidget(
+                                  content: 'تسجيل الدخول',
+                                  iconPresent: false,
+                                  iconEndPresent: false,
+                                  variant: 'ghost',
+                                  size: 'small',
+                                  fullWidth: false,
+                                  loading: false,
+                                  disabled: false,
+                                ),
                               ),
                             ),
                           ].divide(SizedBox(width: 4.0)),

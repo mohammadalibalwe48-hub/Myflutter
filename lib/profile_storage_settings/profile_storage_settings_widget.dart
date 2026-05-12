@@ -1,3 +1,6 @@
+import '/backend/auth_service.dart';
+import '/backend/data_service.dart';
+import '/backend/models.dart';
 import '/components/achievement_badge_widget.dart';
 import '/components/button_widget.dart';
 import '/components/main_bottom_navigation_widget.dart';
@@ -6,6 +9,7 @@ import '/components/switch_component_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/splash_and_onboarding/splash_and_onboarding_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'profile_storage_settings_model.dart';
@@ -28,10 +32,31 @@ class _ProfileStorageSettingsWidgetState
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  ProfileModel? _profile;
+  bool _signingOut = false;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => ProfileStorageSettingsModel());
+    _loadProfile();
+  }
+
+  Future<void> _loadProfile() async {
+    final p = await DataService.instance.getCurrentProfile();
+    if (mounted) setState(() => _profile = p);
+  }
+
+  Future<void> _signOut() async {
+    if (_signingOut) return;
+    setState(() => _signingOut = true);
+    try {
+      await AuthService.instance.signOut();
+      if (!mounted) return;
+      context.go(SplashAndOnboardingWidget.routePath);
+    } finally {
+      if (mounted) setState(() => _signingOut = false);
+    }
   }
 
   @override
@@ -192,7 +217,9 @@ class _ProfileStorageSettingsWidgetState
                                             alignment:
                                                 AlignmentDirectional(0.0, 0.0),
                                             child: Text(
-                                              'أ',
+                                              (_profile?.initials.isNotEmpty ?? false)
+                                                  ? _profile!.initials
+                                                  : 'أ',
                                               textAlign: TextAlign.center,
                                               maxLines: 1,
                                               style: FlutterFlowTheme.of(
@@ -262,7 +289,9 @@ class _ProfileStorageSettingsWidgetState
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'أحمد المحمد',
+                                      _profile?.displayName.isNotEmpty == true
+                                          ? _profile!.displayName
+                                          : 'أحمد المحمد',
                                       style: FlutterFlowTheme.of(context)
                                           .headlineSmall
                                           .override(
@@ -283,7 +312,9 @@ class _ProfileStorageSettingsWidgetState
                                           ),
                                     ),
                                     Text(
-                                      'الصف الحادي عشر - علمي',
+                                      _profile?.grade.isNotEmpty == true
+                                          ? _profile!.grade
+                                          : 'الصف الحادي عشر - علمي',
                                       style: FlutterFlowTheme.of(context)
                                           .bodyMedium
                                           .override(
@@ -1154,24 +1185,27 @@ class _ProfileStorageSettingsWidgetState
                             child: Padding(
                               padding: EdgeInsets.all(24.0),
                               child: Container(
-                                child: wrapWithModel(
-                                  model: _model.buttonModel,
-                                  updateCallback: () => safeSetState(() {}),
-                                  child: ButtonWidget(
-                                    content: 'تسجيل الخروج',
-                                    icon: Icon(
-                                      Icons.logout_rounded,
-                                      color: FlutterFlowTheme.of(context)
-                                          .primaryText,
-                                      size: 16.0,
+                                child: InkWell(
+                                  onTap: _signOut,
+                                  child: wrapWithModel(
+                                    model: _model.buttonModel,
+                                    updateCallback: () => safeSetState(() {}),
+                                    child: ButtonWidget(
+                                      content: 'تسجيل الخروج',
+                                      icon: Icon(
+                                        Icons.logout_rounded,
+                                        color: FlutterFlowTheme.of(context)
+                                            .primaryText,
+                                        size: 16.0,
+                                      ),
+                                      iconPresent: true,
+                                      iconEndPresent: false,
+                                      variant: 'outline',
+                                      size: 'medium',
+                                      fullWidth: true,
+                                      loading: _signingOut,
+                                      disabled: _signingOut,
                                     ),
-                                    iconPresent: true,
-                                    iconEndPresent: false,
-                                    variant: 'outline',
-                                    size: 'medium',
-                                    fullWidth: true,
-                                    loading: false,
-                                    disabled: false,
                                   ),
                                 ),
                               ),

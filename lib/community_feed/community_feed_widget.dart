@@ -1,9 +1,13 @@
+import '/backend/data_service.dart';
+import '/backend/models.dart';
 import '/components/main_bottom_navigation_widget.dart';
 import '/components/question_card_widget.dart';
 import '/components/tab_group_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'community_feed_model.dart';
@@ -24,14 +28,97 @@ class _CommunityFeedWidgetState extends State<CommunityFeedWidget> {
 
   final scaffoldKey = GlobalKey<ScaffoldState>();
 
+  List<CommunityPostModel> _posts = const [];
+  final TextEditingController _composeController = TextEditingController();
+  bool _composing = false;
+
   @override
   void initState() {
     super.initState();
     _model = createModel(context, () => CommunityFeedModel());
+    _loadPosts();
+  }
+
+  Future<void> _loadPosts() async {
+    final fresh = await DataService.instance.listCommunityPosts();
+    if (!mounted) return;
+    if (fresh.isNotEmpty) setState(() => _posts = fresh);
+  }
+
+  Future<void> _compose() async {
+    final body = _composeController.text.trim();
+    if (body.isEmpty || _composing) return;
+    setState(() => _composing = true);
+    try {
+      await DataService.instance.createPost(body: body);
+      _composeController.clear();
+      if (!mounted) return;
+      Navigator.of(context).maybePop();
+      await _loadPosts();
+    } finally {
+      if (mounted) setState(() => _composing = false);
+    }
+  }
+
+  Future<void> _openCompose() async {
+    await showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: FlutterFlowTheme.of(context).secondaryBackground,
+      shape: const RoundedRectangleBorder(
+        borderRadius:
+            BorderRadius.vertical(top: Radius.circular(16.0)),
+      ),
+      builder: (ctx) {
+        final theme = FlutterFlowTheme.of(ctx);
+        return Padding(
+          padding: EdgeInsets.only(
+            left: 16.0,
+            right: 16.0,
+            top: 16.0,
+            bottom: MediaQuery.of(ctx).viewInsets.bottom + 16.0,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text('سؤال جديد',
+                  textAlign: TextAlign.right,
+                  style: theme.titleMedium),
+              const SizedBox(height: 12.0),
+              TextField(
+                controller: _composeController,
+                minLines: 3,
+                maxLines: 6,
+                textDirection: ui.TextDirection.rtl,
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  hintText: 'اكتب سؤالك أو ملاحظتك...',
+                ),
+              ),
+              const SizedBox(height: 16.0),
+              FilledButton(
+                style: FilledButton.styleFrom(
+                  backgroundColor: theme.primary,
+                ),
+                onPressed: _composing ? null : _compose,
+                child: Text(_composing ? '...' : 'نشر'),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _toggleLike(String postId) async {
+    await DataService.instance.togglePostLike(postId);
+    await _loadPosts();
   }
 
   @override
   void dispose() {
+    _composeController.dispose();
     _model.dispose();
 
     super.dispose();
@@ -255,60 +342,126 @@ class _CommunityFeedWidgetState extends State<CommunityFeedWidget> {
                                       ),
                                     ),
                                   ),
-                                  wrapWithModel(
-                                    model: _model.questionCardModel1,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: QuestionCardWidget(
-                                      comments: '8',
-                                      content:
-                                          'كيف يمكنني حل مسألة النواس المرن في الفيزياء؟ هل هناك تبسيط للقوانين؟',
-                                      governorate: 'دمشق',
-                                      grade: 'بكالوريا - علمي',
-                                      isVerified: false,
-                                      subject: 'فيزياء',
-                                      time: 'منذ ساعتين',
-                                      userInitials: 'أ',
-                                      userName: 'أحمد المحمد',
-                                      votes: '24',
-                                      voted: true,
+                                  if (_posts.length > 0)
+                                    InkWell(
+                                      onTap: () => _toggleLike(_posts[0].id),
+                                      child: wrapWithModel(
+                                        model: _model.questionCardModel1,
+                                        updateCallback: () => safeSetState(() {}),
+                                        child: QuestionCardWidget(
+                                          comments: _posts[0].commentCount.toString(),
+                                          content: _posts[0].body,
+                                          governorate: _posts[0].governorate,
+                                          grade: _posts[0].grade,
+                                          isVerified: false,
+                                          subject: _posts[0].subject,
+                                          time: _posts[0].timeLabel,
+                                          userInitials: _posts[0].authorInitials,
+                                          userName: _posts[0].authorName,
+                                          votes: _posts[0].likeCount.toString(),
+                                          voted: true,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    wrapWithModel(
+                                      model: _model.questionCardModel1,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: QuestionCardWidget(
+                                        comments: '8',
+                                        content:
+                                            'كيف يمكنني حل مسألة النواس المرن في الفيزياء؟ هل هناك تبسيط للقوانين؟',
+                                        governorate: 'دمشق',
+                                        grade: 'بكالوريا - علمي',
+                                        isVerified: false,
+                                        subject: 'فيزياء',
+                                        time: 'منذ ساعتين',
+                                        userInitials: 'أ',
+                                        userName: 'أحمد المحمد',
+                                        votes: '24',
+                                        voted: true,
+                                      ),
                                     ),
-                                  ),
-                                  wrapWithModel(
-                                    model: _model.questionCardModel2,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: QuestionCardWidget(
-                                      comments: '42',
-                                      content:
-                                          'إليكم ملخص شامل لقواعد الإعراب للشهادة الإعدادية. بالتوفيق لجميع الطلاب.',
-                                      governorate: 'حلب',
-                                      grade: 'مدرس لغة عربية',
-                                      isVerified: true,
-                                      subject: 'اللغة العربية',
-                                      time: 'منذ 4 ساعات',
-                                      userInitials: 'س',
-                                      userName: 'أ. سارة العلي',
-                                      votes: '156',
-                                      voted: false,
+                                  if (_posts.length > 1)
+                                    InkWell(
+                                      onTap: () => _toggleLike(_posts[1].id),
+                                      child: wrapWithModel(
+                                        model: _model.questionCardModel2,
+                                        updateCallback: () => safeSetState(() {}),
+                                        child: QuestionCardWidget(
+                                          comments: _posts[1].commentCount.toString(),
+                                          content: _posts[1].body,
+                                          governorate: _posts[1].governorate,
+                                          grade: _posts[1].grade,
+                                          isVerified: true,
+                                          subject: _posts[1].subject,
+                                          time: _posts[1].timeLabel,
+                                          userInitials: _posts[1].authorInitials,
+                                          userName: _posts[1].authorName,
+                                          votes: _posts[1].likeCount.toString(),
+                                          voted: false,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    wrapWithModel(
+                                      model: _model.questionCardModel2,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: QuestionCardWidget(
+                                        comments: '42',
+                                        content:
+                                            'إليكم ملخص شامل لقواعد الإعراب للشهادة الإعدادية. بالتوفيق لجميع الطلاب.',
+                                        governorate: 'حلب',
+                                        grade: 'مدرس لغة عربية',
+                                        isVerified: true,
+                                        subject: 'اللغة العربية',
+                                        time: 'منذ 4 ساعات',
+                                        userInitials: 'س',
+                                        userName: 'أ. سارة العلي',
+                                        votes: '156',
+                                        voted: false,
+                                      ),
                                     ),
-                                  ),
-                                  wrapWithModel(
-                                    model: _model.questionCardModel3,
-                                    updateCallback: () => safeSetState(() {}),
-                                    child: QuestionCardWidget(
-                                      comments: '3',
-                                      content:
-                                          'متى يبدأ التسجيل على المفاضلة الجامعية لهذا العام؟',
-                                      governorate: 'حمص',
-                                      grade: 'تاسع',
-                                      isVerified: false,
-                                      subject: 'عام',
-                                      time: 'منذ يوم',
-                                      userInitials: 'ل',
-                                      userName: 'ليلى إدريس',
-                                      votes: '12',
-                                      voted: false,
+                                  if (_posts.length > 2)
+                                    InkWell(
+                                      onTap: () => _toggleLike(_posts[2].id),
+                                      child: wrapWithModel(
+                                        model: _model.questionCardModel3,
+                                        updateCallback: () => safeSetState(() {}),
+                                        child: QuestionCardWidget(
+                                          comments: _posts[2].commentCount.toString(),
+                                          content: _posts[2].body,
+                                          governorate: _posts[2].governorate,
+                                          grade: _posts[2].grade,
+                                          isVerified: false,
+                                          subject: _posts[2].subject,
+                                          time: _posts[2].timeLabel,
+                                          userInitials: _posts[2].authorInitials,
+                                          userName: _posts[2].authorName,
+                                          votes: _posts[2].likeCount.toString(),
+                                          voted: false,
+                                        ),
+                                      ),
+                                    )
+                                  else
+                                    wrapWithModel(
+                                      model: _model.questionCardModel3,
+                                      updateCallback: () => safeSetState(() {}),
+                                      child: QuestionCardWidget(
+                                        comments: '3',
+                                        content:
+                                            'متى يبدأ التسجيل على المفاضلة الجامعية لهذا العام؟',
+                                        governorate: 'حمص',
+                                        grade: 'تاسع',
+                                        isVerified: false,
+                                        subject: 'عام',
+                                        time: 'منذ يوم',
+                                        userInitials: 'ل',
+                                        userName: 'ليلى إدريس',
+                                        votes: '12',
+                                        voted: false,
+                                      ),
                                     ),
-                                  ),
                                   Container(
                                     height: 160.0,
                                   ),
@@ -327,22 +480,26 @@ class _CommunityFeedWidgetState extends State<CommunityFeedWidget> {
               alignment: AlignmentDirectional(-1.0, 1.0),
               child: Padding(
                 padding: EdgeInsetsDirectional.fromSTEB(32.0, 0.0, 0.0, 100.0),
-                child: Container(
-                  alignment: AlignmentDirectional(-1.0, 1.0),
+                child: InkWell(
+                  onTap: _openCompose,
+                  borderRadius: BorderRadius.circular(9999.0),
                   child: Container(
+                    alignment: AlignmentDirectional(-1.0, 1.0),
                     child: Container(
-                      width: 64.0,
-                      height: 64.0,
-                      decoration: BoxDecoration(
-                        color: FlutterFlowTheme.of(context).primary,
-                        borderRadius: BorderRadius.circular(9999.0),
-                        shape: BoxShape.rectangle,
-                      ),
-                      alignment: AlignmentDirectional(0.0, 0.0),
-                      child: Icon(
-                        Icons.add_rounded,
-                        color: FlutterFlowTheme.of(context).onPrimary,
-                        size: 32.0,
+                      child: Container(
+                        width: 64.0,
+                        height: 64.0,
+                        decoration: BoxDecoration(
+                          color: FlutterFlowTheme.of(context).primary,
+                          borderRadius: BorderRadius.circular(9999.0),
+                          shape: BoxShape.rectangle,
+                        ),
+                        alignment: AlignmentDirectional(0.0, 0.0),
+                        child: Icon(
+                          Icons.add_rounded,
+                          color: FlutterFlowTheme.of(context).onPrimary,
+                          size: 32.0,
+                        ),
                       ),
                     ),
                   ),

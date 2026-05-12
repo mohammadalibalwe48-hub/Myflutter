@@ -6,6 +6,7 @@ import '/components/unit_accordion_child_widget.dart';
 import '/components/unit_accordion_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
+import '/academic_library/academic_library_widget.dart';
 import '/flutter_flow/flutter_flow_util.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -90,7 +91,12 @@ class _SubjectLessonListWidgetState extends State<SubjectLessonListWidget> {
                                   size: 24.0,
                                 ),
                                 onPressed: () {
-                                  print('IconButton pressed ...');
+                                  if (context.canPop()) {
+                                    context.pop();
+                                  } else {
+                                    context.go(
+                                        AcademicLibraryWidget.routePath);
+                                  }
                                 },
                               ),
                               Expanded(

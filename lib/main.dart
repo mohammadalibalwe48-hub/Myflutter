@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import 'flutter_flow/flutter_flow_util.dart';
+import 'backend/supabase_config.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,6 +13,17 @@ void main() async {
   usePathUrlStrategy();
 
   await FlutterFlowTheme.initialize();
+
+  try {
+    await Supabase.initialize(
+      url: SupabaseConfig.url,
+      anonKey: SupabaseConfig.anonKey,
+      debug: false,
+    );
+  } catch (e) {
+    // Surfacing the failure to the console is enough; UI still renders.
+    debugPrint('Supabase init failed: $e');
+  }
 
   runApp(MyApp());
 }

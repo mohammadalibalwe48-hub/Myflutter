@@ -6,6 +6,7 @@ import '/components/text_field_widget.dart';
 import '/flutter_flow/flutter_flow_icon_button.dart';
 import '/flutter_flow/flutter_flow_theme.dart';
 import '/flutter_flow/flutter_flow_util.dart';
+import '/subject_lesson_list/subject_lesson_list_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'academic_library_model.dart';
@@ -705,61 +706,82 @@ class _AcademicLibraryWidgetState extends State<AcademicLibraryWidget> {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.center,
                                           children: [
-                                            wrapWithModel(
-                                              model: _model.subjectCardModel1,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: SubjectCardWidget(
-                                                bgColor:
-                                                    FlutterFlowTheme.of(context)
+                                            InkWell(
+                                              onTap: () => context.push(
+                                                  SubjectLessonListWidget
+                                                      .routePath),
+                                              child: wrapWithModel(
+                                                model:
+                                                    _model.subjectCardModel1,
+                                                updateCallback: () =>
+                                                    safeSetState(() {}),
+                                                child: SubjectCardWidget(
+                                                  bgColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .primary,
+                                                  count: '42',
+                                                  icon: Icon(
+                                                    Icons.functions_rounded,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
                                                         .primary,
-                                                count: '42',
-                                                icon: Icon(
-                                                  Icons.functions_rounded,
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primary,
-                                                  size: 24.0,
+                                                    size: 24.0,
+                                                  ),
+                                                  title: 'الرياضيات',
                                                 ),
-                                                title: 'الرياضيات',
                                               ),
                                             ),
-                                            wrapWithModel(
-                                              model: _model.subjectCardModel2,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: SubjectCardWidget(
-                                                bgColor:
-                                                    FlutterFlowTheme.of(context)
-                                                        .tertiary,
-                                                count: '35',
-                                                icon: Icon(
-                                                  Icons.science_rounded,
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primary,
-                                                  size: 24.0,
+                                            InkWell(
+                                              onTap: () => context.push(
+                                                  SubjectLessonListWidget
+                                                      .routePath),
+                                              child: wrapWithModel(
+                                                model:
+                                                    _model.subjectCardModel2,
+                                                updateCallback: () =>
+                                                    safeSetState(() {}),
+                                                child: SubjectCardWidget(
+                                                  bgColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .tertiary,
+                                                  count: '35',
+                                                  icon: Icon(
+                                                    Icons.science_rounded,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 24.0,
+                                                  ),
+                                                  title: 'العلوم',
                                                 ),
-                                                title: 'العلوم',
                                               ),
                                             ),
-                                            wrapWithModel(
-                                              model: _model.subjectCardModel3,
-                                              updateCallback: () =>
-                                                  safeSetState(() {}),
-                                              child: SubjectCardWidget(
-                                                bgColor:
-                                                    FlutterFlowTheme.of(context)
-                                                        .secondary,
-                                                count: '28',
-                                                icon: Icon(
-                                                  Icons.speed_rounded,
-                                                  color: FlutterFlowTheme.of(
-                                                          context)
-                                                      .primary,
-                                                  size: 24.0,
+                                            InkWell(
+                                              onTap: () => context.push(
+                                                  SubjectLessonListWidget
+                                                      .routePath),
+                                              child: wrapWithModel(
+                                                model:
+                                                    _model.subjectCardModel3,
+                                                updateCallback: () =>
+                                                    safeSetState(() {}),
+                                                child: SubjectCardWidget(
+                                                  bgColor:
+                                                      FlutterFlowTheme.of(
+                                                              context)
+                                                          .secondary,
+                                                  count: '28',
+                                                  icon: Icon(
+                                                    Icons.speed_rounded,
+                                                    color: FlutterFlowTheme.of(
+                                                            context)
+                                                        .primary,
+                                                    size: 24.0,
+                                                  ),
+                                                  title: 'الفيزياء',
                                                 ),
-                                                title: 'الفيزياء',
                                               ),
                                             ),
                                             wrapWithModel(
